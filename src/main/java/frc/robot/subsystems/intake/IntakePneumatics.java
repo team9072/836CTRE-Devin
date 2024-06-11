@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import frc.robot.Constants.Ids;
 
-public class IntakePneumatics {
+class IntakePneumatics {
     private final Solenoid m_extenderSolenoid = new Solenoid(Ids.kPneumaticControllerCanId, PneumaticsModuleType.CTREPCM, Ids.kIntakeSolenoidChannel);
 
     public void deploy() {

@@ -4,7 +4,7 @@ import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import frc.robot.Constants.Ids;
 
-public class IntakeMotor {
+class IntakeMotor {
     private final VictorSPX m_intakeMotor = new VictorSPX(Ids.kIntakeMotorCanId);
     private IntakeMotorState m_state = IntakeMotorState.STOPPED;
 
