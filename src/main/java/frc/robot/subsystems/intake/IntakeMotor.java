@@ -5,9 +5,6 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import frc.robot.Constants.Ids;
 
 class IntakeMotor {
-    private final VictorSPX m_intakeMotor = new VictorSPX(Ids.kIntakeMotorCanId);
-    private IntakeMotorState m_state = IntakeMotorState.STOPPED;
-
     public enum IntakeMotorState {
         STOPPED(0),
         INTAKE(0.7);
@@ -18,6 +15,9 @@ class IntakeMotor {
             this.speed = speed;
         }
     }
+
+    private final VictorSPX m_intakeMotor = new VictorSPX(Ids.kIntakeMotorCanId);
+    private IntakeMotorState m_state = IntakeMotorState.STOPPED;
 
     public void set(IntakeMotorState state) {
         m_state = state;
