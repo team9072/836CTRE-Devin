@@ -11,7 +11,8 @@ import frc.robot.Constants.Ids;
 public class Hopper extends SubsystemBase {
     public enum HopperMotorState {
         STOPPED(0),
-        RUNNING(0.5);
+        RUNNING(0.5),
+        SHOOTING(1);
 
         double speed;
 

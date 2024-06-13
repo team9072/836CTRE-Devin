@@ -21,20 +21,21 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.Flywheel;
+import frc.robot.subsystems.shooter.Hopper;
+import frc.robot.subsystems.shooter.ShooterCommands;
 
 public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
   private double MaxAngularRate = 1.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
-  private final Compressor m_Compressor = new Compressor(Ids.kPneumaticControllerCanId, PneumaticsModuleType.CTREPCM);
 
   /* Setting up bindings for necessary control of the swerve drive platform */
-  private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
-  private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
+  private final CommandXboxController joystick = new CommandXboxController(0);
+  private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain;
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-      .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
-                                                               // driving in open loop
+      .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1)
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -42,6 +43,8 @@ public class RobotContainer {
 
   private final IntakeSubsystem m_intake = new IntakeSubsystem();
   private final Flywheel m_flywheel = new Flywheel();
+  private final ShooterCommands m_shooter = new ShooterCommands(new Hopper(), m_flywheel);
+  private final Compressor m_Compressor = new Compressor(Ids.kPneumaticControllerCanId, PneumaticsModuleType.CTREPCM);
 
   private void configureBindings() {
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
@@ -56,6 +59,8 @@ public class RobotContainer {
         .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
 
     joystick.x().whileTrue(m_intake.getIntakeCommand());
+
+    joystick.y().whileTrue(m_shooter.primeShooter());
     
     // reset the field-centric heading on left bumper press
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
