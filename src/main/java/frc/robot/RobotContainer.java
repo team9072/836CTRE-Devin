@@ -58,12 +58,12 @@ public class RobotContainer {
     joystick.b().whileTrue(drivetrain
         .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
 
-    joystick.x().whileTrue(m_intake.getIntakeCommand());
-
-    joystick.y().whileTrue(m_shooter.primeShooter());
-    
     // reset the field-centric heading on left bumper press
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+
+    joystick.x().whileTrue(m_intake.getIntakeCommand());
+    joystick.y().whileTrue(m_shooter.primeShooter());
+    joystick.rightTrigger().whileTrue(m_shooter.shootContinuous());
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));

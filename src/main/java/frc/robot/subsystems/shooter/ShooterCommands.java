@@ -18,4 +18,21 @@ public class ShooterCommands {
                 Commands.runOnce(() -> m_hopper.set(HopperMotorState.RUNNING), m_hopper),
                 Commands.waitUntil(m_hopper::isPrimed)).finallyDo(() -> m_hopper.set(HopperMotorState.STOPPED));
     }
+
+    public Command shootContinuous() {
+        return Commands.sequence(
+            Commands.runOnce(() -> {
+                    m_hopper.set(HopperMotorState.STOPPED);
+                    m_flywheel.setVelocityRaw(30000);
+                }, m_hopper, m_flywheel),
+            Commands.waitUntil(m_flywheel::isAtTargetVelocity),
+            Commands.runOnce(() -> m_hopper.set(HopperMotorState.SHOOTING), m_hopper),
+            Commands.run(() -> {
+                // TODO: Set speed and turret angle based on vision
+            }, m_flywheel)
+            ).finallyDo(() -> {
+                m_hopper.set(HopperMotorState.STOPPED);
+                m_flywheel.stop();
+            });
+    }
 }
