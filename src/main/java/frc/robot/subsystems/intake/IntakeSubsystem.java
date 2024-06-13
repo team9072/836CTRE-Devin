@@ -22,4 +22,8 @@ public class IntakeSubsystem extends SubsystemBase {
     public Command getIntakeCommand() {
         return Commands.startEnd(this::deploy, this::retract, this);
     }
+
+    public boolean isDeployed() {
+        return m_pneumatics.isDeployed();
+    }
 }
