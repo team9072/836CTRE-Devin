@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.Ids;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.climbing.ClimbingSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.Flywheel;
 import frc.robot.subsystems.shooter.Hopper;
@@ -44,9 +45,11 @@ public class RobotContainer {
   private final IntakeSubsystem m_intake = new IntakeSubsystem();
   private final Flywheel m_flywheel = new Flywheel();
   private final ShooterCommands m_shooter = new ShooterCommands(new Hopper(), m_flywheel);
+  private final ClimbingSubsystem m_climbers = new ClimbingSubsystem();
   private final Compressor m_Compressor = new Compressor(Ids.kPneumaticControllerCanId, PneumaticsModuleType.CTREPCM);
 
   private void configureBindings() {
+    // Driving
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
         drivetrain.applyRequest(() -> drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
@@ -61,15 +64,20 @@ public class RobotContainer {
     // reset the field-centric heading on left bumper press
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
-    joystick.x().whileTrue(m_intake.getIntakeCommand());
-    joystick.y().whileTrue(m_shooter.primeShooter());
-    joystick.rightTrigger().whileTrue(m_shooter.shootContinuous());
-
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
 
     drivetrain.registerTelemetry(logger::telemeterize);
+
+    // Gamepiece handling
+    joystick.x().whileTrue(m_intake.getIntakeCommand());
+    joystick.y().whileTrue(m_shooter.primeShooter());
+    joystick.rightTrigger().whileTrue(m_shooter.shootContinuous());
+
+    // Climbing
+    joystick.povUp().onTrue(Commands.runOnce(m_climbers::raiseArms, m_climbers));
+    joystick.povDown().onTrue(Commands.runOnce(m_climbers::lowerArms, m_climbers));
   }
 
   public RobotContainer() {

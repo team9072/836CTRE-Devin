@@ -17,6 +17,9 @@ public class Constants {
         public static final int kIntakeMotorCanId = 30;
         public static final int kIntakeSolenoidChannel = 0;
 
+        // Climbing
+        public static final int kClimberArmsSolenoidChannel = 1;
+
         // Pneumatics
         public static final int kPneumaticControllerCanId = 15;
     }
