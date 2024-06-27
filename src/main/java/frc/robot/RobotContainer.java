@@ -4,10 +4,13 @@
 
 package frc.robot;
 
+import com.choreo.lib.Choreo;
+import com.choreo.lib.ChoreoTrajectory;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -40,7 +43,7 @@ public class RobotContainer {
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-  private final Telemetry logger = new Telemetry(MaxSpeed);
+  private final Telemetry logger = new Telemetry(MaxSpeed); 
 
   private final IntakeSubsystem m_intake = new IntakeSubsystem();
   private final Flywheel m_flywheel = new Flywheel();
@@ -86,6 +89,21 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    SwerveRequest.ApplyChassisSpeeds request = new SwerveRequest.ApplyChassisSpeeds();
+    ChoreoTrajectory traj = Choreo.getTrajectory("Curved Test");
+    drivetrain.seedFieldRelative(traj.getInitialState().getPose());
+
+    return Choreo.choreoSwerveCommand(
+      traj,
+      () -> drivetrain.getState().Pose,
+      Choreo.choreoSwerveController(
+        new PIDController(5, 0, 0),
+        new PIDController(5, 0, 0),
+        new PIDController(5, 0, 0)
+      ),
+      (speeds) -> drivetrain.setControl(request.withSpeeds(speeds)),
+      () -> false,
+      drivetrain
+    );
   }
 }
