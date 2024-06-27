@@ -25,6 +25,7 @@ public class ShooterCommands {
                     m_hopper.set(HopperMotorState.STOPPED);
                     m_flywheel.setVelocityRaw(30000);
                 }, m_hopper, m_flywheel),
+            Commands.waitSeconds(0.5),
             Commands.waitUntil(m_flywheel::isAtTargetVelocity),
             Commands.runOnce(() -> m_hopper.set(HopperMotorState.SHOOTING), m_hopper),
             Commands.run(() -> {
