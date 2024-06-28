@@ -90,7 +90,7 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     SwerveRequest.ApplyChassisSpeeds request = new SwerveRequest.ApplyChassisSpeeds();
-    ChoreoTrajectory traj = Choreo.getTrajectory("Curved Test");
+    ChoreoTrajectory traj = Choreo.getTrajectory("4m Forward");
     drivetrain.seedFieldRelative(traj.getInitialState().getPose());
 
     return Choreo.choreoSwerveCommand(
