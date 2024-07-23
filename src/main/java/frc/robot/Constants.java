@@ -1,5 +1,7 @@
 package frc.robot;
 
+import edu.wpi.first.math.util.Units;
+
 public class Constants {
     public static class Ids {
         // Hopper
@@ -22,5 +24,9 @@ public class Constants {
 
         // Pneumatics
         public static final int kPneumaticControllerCanId = 15;
+
+        // Photonvision
+        public static final double kCameraHeight = Units.inchesToMeters(20.75);
+        public static final double kCamraPitchRadians = Units.degreesToRadians(27);
     }
 }

@@ -27,6 +27,7 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.Flywheel;
 import frc.robot.subsystems.shooter.Hopper;
 import frc.robot.subsystems.shooter.ShooterCommands;
+import frc.robot.subsystems.vision.SimpleVision;
 
 public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
@@ -50,6 +51,7 @@ public class RobotContainer {
   private final ShooterCommands m_shooter = new ShooterCommands(new Hopper(), m_flywheel);
   private final ClimbingSubsystem m_climbers = new ClimbingSubsystem();
   private final Compressor m_Compressor = new Compressor(Ids.kPneumaticControllerCanId, PneumaticsModuleType.CTREPCM);
+  private final SimpleVision m_vision = new SimpleVision();
 
   private void configureBindings() {
     // Driving
@@ -77,6 +79,8 @@ public class RobotContainer {
     joystick.x().whileTrue(m_intake.getIntakeCommand());
     joystick.y().whileTrue(m_shooter.primeShooter());
     joystick.rightTrigger().whileTrue(m_shooter.shootContinuous());
+
+    joystick.leftTrigger().whileTrue(Commands.run(() -> m_vision.aimAtTag(15, drivetrain), drivetrain));
 
     // Climbing
     joystick.povUp().onTrue(Commands.runOnce(m_climbers::raiseArms, m_climbers));
