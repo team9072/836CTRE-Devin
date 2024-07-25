@@ -27,6 +27,7 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.Flywheel;
 import frc.robot.subsystems.shooter.Hopper;
 import frc.robot.subsystems.shooter.ShooterCommands;
+import frc.robot.subsystems.vision.SimpleVision;
 
 public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
@@ -47,9 +48,10 @@ public class RobotContainer {
 
   private final IntakeSubsystem m_intake = new IntakeSubsystem();
   private final Flywheel m_flywheel = new Flywheel();
-  private final ShooterCommands m_shooter = new ShooterCommands(new Hopper(), m_flywheel);
+  private final ShooterCommands m_shooter = new ShooterCommands(new Hopper(), m_flywheel, m_intake);
   private final ClimbingSubsystem m_climbers = new ClimbingSubsystem();
   private final Compressor m_compressor = new Compressor(Ids.kPneumaticControllerCanId, PneumaticsModuleType.CTREPCM);
+  private final SimpleVision m_vision = new SimpleVision();
 
   private void configureBindings() {
     // Driving
@@ -75,8 +77,11 @@ public class RobotContainer {
 
     // Gamepiece handling
     joystick.x().whileTrue(m_intake.getIntakeCommand());
-    joystick.y().whileTrue(m_shooter.primeShooter());
+    joystick.y().whileTrue(m_shooter.primeBallForShooting());
     joystick.rightTrigger().whileTrue(m_shooter.shootContinuous());
+    joystick.rightBumper().onTrue(m_shooter.shootAll());
+
+    joystick.leftTrigger().whileTrue(Commands.run(() -> m_vision.aimAtTag(15, drivetrain), drivetrain));
 
     // Climbing
     joystick.povUp().onTrue(Commands.runOnce(m_climbers::raiseArms, m_climbers));
@@ -88,11 +93,8 @@ public class RobotContainer {
     configureBindings();
   }
 
-  public Command getAutonomousCommand() {
+  public Command getChoreoCommand(ChoreoTrajectory traj) {
     SwerveRequest.ApplyChassisSpeeds request = new SwerveRequest.ApplyChassisSpeeds();
-    ChoreoTrajectory traj = Choreo.getTrajectory("Curved Test");
-    drivetrain.seedFieldRelative(traj.getInitialState().getPose());
-
     return Choreo.choreoSwerveCommand(
       traj,
       () -> drivetrain.getState().Pose,
@@ -106,5 +108,20 @@ public class RobotContainer {
       drivetrain
     );
   }
-}
 
+  public Command getAutonomousCommand() {
+    var trajParts = Choreo.getTrajectoryGroup("Shoot and get object test");
+    drivetrain.seedFieldRelative(trajParts.get(0).getInitialState().getPose());
+
+    return Commands.sequence(
+      getChoreoCommand(trajParts.get(0)),
+      m_shooter.shootAll(),
+      Commands.deadline(
+        getChoreoCommand(trajParts.get(1)),
+        m_intake.getIntakeCommand()  
+      ),
+      m_shooter.shootAll(),
+      getChoreoCommand(trajParts.get(2))
+    );
+  }
+}

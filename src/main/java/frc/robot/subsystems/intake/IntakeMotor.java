@@ -7,7 +7,8 @@ import frc.robot.Constants.Ids;
 class IntakeMotor {
     public enum IntakeMotorState {
         STOPPED(0),
-        INTAKE(0.7);
+        INTAKE(0.7),
+        AGITATE(0.4);
 
         double speed;
 

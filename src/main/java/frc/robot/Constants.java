@@ -6,7 +6,7 @@ public class Constants {
     public static class Ids {
         // Hopper
         public static final int kHopperMotorCanId = 31;
-        public static final int kPrimeSensorDioId = 2;
+        public static final int kPrimeBallSensorDioId = 2;
         public static final int kInnerBallSensorDioId = 0;
         public static final int kOuterBallSensorDioId = 1;
 
@@ -14,6 +14,7 @@ public class Constants {
         // Flywheel
         public static final int kFlywheelMasterMotorCanId = 21;
         public static final int kFlywheelFollowerMotorCanId = 22;
+        public static final int kFlywheelBallSensorDioID = 3;
 
         // Intake
         public static final int kIntakeMotorCanId = 30;
@@ -24,9 +25,13 @@ public class Constants {
 
         // Pneumatics
         public static final int kPneumaticControllerCanId = 15;
-
-        // Photonvision
-        public static final double kCameraHeight = Units.inchesToMeters(20.75);
-        public static final double kCamraPitchRadians = Units.degreesToRadians(27);
     }
+
+    // Sensors
+    public static final double kBeamBreakDebounceTime = 0.05;
+
+    // Photonvision
+    public static final double kCameraHeight = Units.inchesToMeters(20.75);
+    public static final double kCamraPitchRadians = Units.degreesToRadians(27);
+
 }

@@ -6,14 +6,20 @@ import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 import frc.robot.Constants.Ids;
 
 public class Flywheel extends SubsystemBase {
     private static final double flywheelKF = 1023 / 44205.9;
 
     private final TalonSRX m_shooterMotor = new TalonSRX(Ids.kFlywheelMasterMotorCanId);
+    private final DigitalInput m_ballShootSensor = new DigitalInput(Ids.kFlywheelBallSensorDioID);
 
+    private final Trigger m_ballShootTrigger = new Trigger(() -> !m_ballShootSensor.get()).debounce(Constants.kBeamBreakDebounceTime);
+    
     public Flywheel() {
         m_shooterMotor.configFactoryDefault();
         m_shooterMotor.configVoltageCompSaturation(12);
@@ -76,5 +82,13 @@ public class Flywheel extends SubsystemBase {
      */
     public boolean isAtTargetVelocity() {
         return isAtTargetVelocity(2000);
+    }
+
+    public Trigger getBallShootTrigger() {
+        return m_ballShootTrigger;
+    }
+
+    public boolean hasBallInHood() {
+        return m_ballShootTrigger.getAsBoolean();
     }
 }
