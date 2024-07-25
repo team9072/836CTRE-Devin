@@ -27,7 +27,6 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.Flywheel;
 import frc.robot.subsystems.shooter.Hopper;
 import frc.robot.subsystems.shooter.ShooterCommands;
-import frc.robot.subsystems.vision.SimpleVision;
 
 public class RobotContainer {
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
@@ -50,8 +49,7 @@ public class RobotContainer {
   private final Flywheel m_flywheel = new Flywheel();
   private final ShooterCommands m_shooter = new ShooterCommands(new Hopper(), m_flywheel);
   private final ClimbingSubsystem m_climbers = new ClimbingSubsystem();
-  private final Compressor m_Compressor = new Compressor(Ids.kPneumaticControllerCanId, PneumaticsModuleType.CTREPCM);
-  private final SimpleVision m_vision = new SimpleVision();
+  private final Compressor m_compressor = new Compressor(Ids.kPneumaticControllerCanId, PneumaticsModuleType.CTREPCM);
 
   private void configureBindings() {
     // Driving
@@ -80,21 +78,19 @@ public class RobotContainer {
     joystick.y().whileTrue(m_shooter.primeShooter());
     joystick.rightTrigger().whileTrue(m_shooter.shootContinuous());
 
-    joystick.leftTrigger().whileTrue(Commands.run(() -> m_vision.aimAtTag(15, drivetrain), drivetrain));
-
     // Climbing
     joystick.povUp().onTrue(Commands.runOnce(m_climbers::raiseArms, m_climbers));
     joystick.povDown().onTrue(Commands.runOnce(m_climbers::lowerArms, m_climbers));
   }
 
   public RobotContainer() {
-    m_Compressor.enableDigital();
+    m_compressor.enableDigital();
     configureBindings();
   }
 
   public Command getAutonomousCommand() {
     SwerveRequest.ApplyChassisSpeeds request = new SwerveRequest.ApplyChassisSpeeds();
-    ChoreoTrajectory traj = Choreo.getTrajectory("4m Forward");
+    ChoreoTrajectory traj = Choreo.getTrajectory("Curved Test");
     drivetrain.seedFieldRelative(traj.getInitialState().getPose());
 
     return Choreo.choreoSwerveCommand(
@@ -111,3 +107,4 @@ public class RobotContainer {
     );
   }
 }
+
