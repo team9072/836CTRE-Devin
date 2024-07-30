@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -27,6 +28,7 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.Flywheel;
 import frc.robot.subsystems.shooter.Hopper;
 import frc.robot.subsystems.shooter.ShooterCommands;
+import frc.robot.subsystems.shooter.TurretSubsystem;
 import frc.robot.subsystems.vision.SimpleVision;
 
 public class RobotContainer {
@@ -35,6 +37,7 @@ public class RobotContainer {
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0);
+  private final CommandXboxController joystick2 = new CommandXboxController(1);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain;
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -52,6 +55,7 @@ public class RobotContainer {
   private final ClimbingSubsystem m_climbers = new ClimbingSubsystem();
   private final Compressor m_compressor = new Compressor(Ids.kPneumaticControllerCanId, PneumaticsModuleType.CTREPCM);
   private final SimpleVision m_vision = new SimpleVision();
+  private final TurretSubsystem m_turret = new TurretSubsystem();
 
   private void configureBindings() {
     // Driving
@@ -63,8 +67,6 @@ public class RobotContainer {
         ));
 
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    joystick.b().whileTrue(drivetrain
-        .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
 
     // reset the field-centric heading on left bumper press
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
@@ -86,6 +88,11 @@ public class RobotContainer {
     // Climbing
     joystick.povUp().onTrue(Commands.runOnce(m_climbers::raiseArms, m_climbers));
     joystick.povDown().onTrue(Commands.runOnce(m_climbers::lowerArms, m_climbers));
+
+    // Turret
+    joystick2.b().whileTrue(m_turret.findTurretLimitsCommand());
+    m_turret.setDefaultCommand(Commands.run(() -> m_turret.setOutput(-joystick2.getLeftX() * 0.4), m_turret));
+    joystick2.x().whileTrue(Commands.runEnd(() -> m_turret.setPosition(SmartDashboard.getNumber("pos", 0)), () -> m_turret.setOutput(0), m_turret));
   }
 
   public RobotContainer() {

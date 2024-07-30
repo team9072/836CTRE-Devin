@@ -25,6 +25,9 @@ public class Constants {
 
         // Pneumatics
         public static final int kPneumaticControllerCanId = 15;
+
+        // Turret
+        public static final int kTurretMotorCanID = 23;
     }
 
     // Sensors
