@@ -49,7 +49,6 @@ public class RobotContainer {
 
     joystick.a().whileTrue(m_drive.applyBrake());
     joystick.b().whileTrue(m_drive.apply(() -> m_drive.point(-joystick.getLeftY(), -joystick.getLeftX())));
-    joystick.leftTrigger().whileTrue(m_drivetrain.run(() -> m_vision.aimAtTag(15, m_drivetrain)));
 
     // reset the field-centric heading on left bumper press
     joystick.leftBumper().onTrue(m_drive.reorientForward());
@@ -66,6 +65,7 @@ public class RobotContainer {
 
     // Turret
     m_turret.setDefaultCommand(m_turret.run(() -> m_turret.setOutput(-joystick2.getLeftX() * 0.4)));
+    joystick.leftTrigger().whileTrue(m_vision.aimTurretAtTag(15, m_turret, m_drivetrain));
     joystick2.b().whileTrue(m_turret.findTurretLimitsCommand());
     joystick2.x().whileTrue(
         m_turret.runEnd(() -> m_turret.setPosition(Rotation2d.fromDegrees(SmartDashboard.getNumber("pos", 0))), () -> m_turret.setOutput(0)));
