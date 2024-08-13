@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -67,7 +68,7 @@ public class RobotContainer {
     m_turret.setDefaultCommand(m_turret.run(() -> m_turret.setOutput(-joystick2.getLeftX() * 0.4)));
     joystick2.b().whileTrue(m_turret.findTurretLimitsCommand());
     joystick2.x().whileTrue(
-        m_turret.runEnd(() -> m_turret.setPosition(SmartDashboard.getNumber("pos", 0)), () -> m_turret.setOutput(0)));
+        m_turret.runEnd(() -> m_turret.setPosition(Rotation2d.fromDegrees(SmartDashboard.getNumber("pos", 0))), () -> m_turret.setOutput(0)));
   }
 
   public RobotContainer() {
