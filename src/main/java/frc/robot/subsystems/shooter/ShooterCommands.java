@@ -26,13 +26,16 @@ public class ShooterCommands {
         .finallyDo(() -> m_hopper.set(HopperMotorState.STOPPED));
   }
 
-  public Command primeFlywheel() {
+  private Command primeFlywheel() {
     return Commands.sequence(
         Commands.runOnce(() -> {
           m_flywheel.setVelocityRaw(30000);
         }, m_flywheel),
         Commands.waitSeconds(0.5),
-        Commands.waitUntil(m_flywheel::isAtTargetVelocity));
+        Commands.waitUntil(m_flywheel::isAtTargetVelocity))
+        .finallyDo((interrupted) -> {
+          if (interrupted) m_flywheel.stop();
+        });
   }
 
   private Command shoot() {
